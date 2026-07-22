@@ -47,7 +47,6 @@ export function securityHeaders(req) {
 			"default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self'; base-uri 'none'; frame-ancestors 'none'",
 		"Cross-Origin-Opener-Policy": "same-origin",
 	};
-	// HSTS solo tiene sentido detrás de HTTPS (Render lo da gratis).
 	if ((req.headers["x-forwarded-proto"] || "") === "https") {
 		h["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains";
 	}

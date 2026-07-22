@@ -2,11 +2,6 @@ import db from "../db.js";
 import { send } from "../utils.js";
 import { esMiembro } from "./grupos.js";
 
-/**
- * Calcula los saldos netos de un grupo (en centavos):
- *   neto = lo que pagó - lo que le corresponde + pagos hechos - pagos recibidos
- * neto > 0: le deben plata. neto < 0: debe plata.
- */
 export async function calcularSaldos(grupoId) {
 	const miembros = await db.all(
 		`SELECT u.id, u.nombre FROM miembros m JOIN users u ON u.id = m.user_id
@@ -46,10 +41,6 @@ export async function calcularSaldos(grupoId) {
 	}));
 }
 
-/**
- * Liquidación con mínimo de transferencias (greedy):
- * empareja al mayor deudor con el mayor acreedor hasta saldar todo.
- */
 export function liquidar(saldos) {
 	const deudores = saldos
 		.filter((s) => s.neto < 0)
@@ -84,7 +75,6 @@ export function liquidar(saldos) {
 	return transferencias;
 }
 
-/* GET /api/grupos/:id/saldos (auth, miembro) */
 export async function obtener(req, res, user, _body, grupoId) {
 	if (!(await esMiembro(grupoId, user.id)))
 		return send(res, 403, { error: "No sos miembro de esta vaquita" });

@@ -1,6 +1,5 @@
 "use strict";
 
-/* ---------- Creación de elementos ---------- */
 function h(tag, attrs = {}, ...children) {
 	const el = document.createElement(tag);
 	for (const [k, v] of Object.entries(attrs || {})) {
@@ -24,7 +23,6 @@ function h(tag, attrs = {}, ...children) {
 	return el;
 }
 
-/* ---------- Íconos SVG de línea fina (sin emojis) ---------- */
 const ICON_PATHS = {
 	home: '<path d="M3 10.5 12 3l9 7.5"/><path d="M5.5 9.5V21h13V9.5"/><path d="M9.5 21v-6h5v6"/>',
 	group: '<circle cx="8.5" cy="8" r="3.2"/><circle cx="16" cy="9.5" r="2.6"/><path d="M2.8 19c.6-3.2 2.9-5 5.7-5s5.1 1.8 5.7 5"/><path d="M15.4 14.3c2.3.2 4.1 1.7 4.7 4.2"/>',
@@ -49,7 +47,6 @@ function icon(name, size = 20) {
 	return span;
 }
 
-/* ---------- Formato de plata (centavos -> $ 1.234,56) ---------- */
 const fmtARS = (() => {
 	const f = new Intl.NumberFormat("es-AR", {
 		style: "currency",
@@ -59,7 +56,6 @@ const fmtARS = (() => {
 	return (centavos) => f.format(Number(centavos || 0) / 100);
 })();
 
-/** Parsea "1.234,56" o "1234.56" o "1234" a centavos (entero) o null. */
 function parseMonto(str) {
 	let s = String(str || "").trim().replace(/\s|\$/g, "");
 	if (!s) return null;
@@ -69,7 +65,6 @@ function parseMonto(str) {
 	return Math.round(n * 100);
 }
 
-/* ---------- Fechas ---------- */
 const MESES = ["ene", "feb", "mar", "abr", "may", "jun", "jul", "ago", "sep", "oct", "nov", "dic"];
 function hoyIso() {
 	return new Date().toISOString().slice(0, 10);
@@ -82,13 +77,11 @@ function fmtFecha(iso) {
 	return `${d} ${MESES[m - 1]}${String(y) !== hoy.slice(0, 4) ? ` ${y}` : ""}`;
 }
 
-/* ---------- Iniciales para avatares ---------- */
 function iniciales(nombre) {
 	const parts = String(nombre || "?").trim().split(/\s+/);
 	return (parts[0][0] + (parts[1]?.[0] || "")).toUpperCase();
 }
 
-/* ---------- Toast ---------- */
 let toastTimer = null;
 function toast(msg, tone = "ok") {
 	document.querySelector(".toast")?.remove();
@@ -98,7 +91,6 @@ function toast(msg, tone = "ok") {
 	toastTimer = setTimeout(() => el.remove(), 2600);
 }
 
-/* ---------- Bottom sheet ---------- */
 function openSheet(title, buildContent) {
 	const backdrop = h("div", {
 		class: "modal-backdrop",
@@ -116,7 +108,6 @@ function openSheet(title, buildContent) {
 	return close;
 }
 
-/* ---------- Categorías ---------- */
 const CATEGORIAS = [
 	["comida", "Comida"],
 	["super", "S\u00faper"],
@@ -128,5 +119,4 @@ const CATEGORIAS = [
 ];
 const CAT_LABEL = Object.fromEntries(CATEGORIAS);
 
-/* ---------- Colores de grupo ---------- */
 const COLORES_GRUPO = ["verde", "tierra", "azul", "vino", "mostaza", "gris"];

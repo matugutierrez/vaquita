@@ -3,7 +3,6 @@ import { send, uuid, codigoInvitacion, vStr } from "../utils.js";
 
 const COLORES = ["verde", "tierra", "azul", "vino", "mostaza", "gris"];
 
-/** ¿Es miembro del grupo? Toda la API de grupos pasa por acá. */
 export async function esMiembro(grupoId, userId) {
 	const m = await db.get(
 		"SELECT id FROM miembros WHERE grupo_id = ? AND user_id = ?",
@@ -12,7 +11,6 @@ export async function esMiembro(grupoId, userId) {
 	return Boolean(m);
 }
 
-/* GET /api/grupos (auth) -> mis grupos con totales */
 export async function listar(req, res, user) {
 	const grupos = await db.all(
 		`SELECT g.id, g.nombre, g.codigo, g.color, g.creador_id, g.created_at,
@@ -33,13 +31,11 @@ export async function listar(req, res, user) {
 	return send(res, 200, grupos);
 }
 
-/* POST /api/grupos (auth) { nombre, color? } */
 export async function crear(req, res, user, body) {
 	const nombre = vStr(body.nombre, { min: 2, max: 60 });
 	if (!nombre) return send(res, 400, { error: "Nombre inv\u00e1lido (2-60 caracteres)" });
 	const color = COLORES.includes(body.color) ? body.color : COLORES[0];
 
-	// Código único con reintentos (colisión casi imposible, pero por las dudas).
 	let codigo = codigoInvitacion();
 	for (let i = 0; i < 5; i++) {
 		const clash = await db.get("SELECT id FROM grupos WHERE codigo = ?", [codigo]);
@@ -60,7 +56,6 @@ export async function crear(req, res, user, body) {
 	return send(res, 201, grupo);
 }
 
-/* POST /api/grupos/unirse (auth) { codigo } */
 export async function unirse(req, res, user, body) {
 	const codigo = vStr(body.codigo, { min: 6, max: 6 })?.toUpperCase();
 	if (!codigo) return send(res, 400, { error: "C\u00f3digo inv\u00e1lido" });
@@ -76,7 +71,6 @@ export async function unirse(req, res, user, body) {
 	return send(res, 200, grupo);
 }
 
-/* GET /api/grupos/:id (auth, miembro) -> detalle completo */
 export async function detalle(req, res, user, _body, id) {
 	if (!(await esMiembro(id, user.id)))
 		return send(res, 403, { error: "No sos miembro de esta vaquita" });
@@ -100,7 +94,6 @@ export async function detalle(req, res, user, _body, id) {
 	return send(res, 200, { grupo, miembros, gastos, pagos });
 }
 
-/* DELETE /api/grupos/:id (auth) -> solo el creador borra; otros salen del grupo */
 export async function salirOBorrar(req, res, user, _body, id) {
 	const grupo = await db.get("SELECT * FROM grupos WHERE id = ?", [id]);
 	if (!grupo) return send(res, 404, { error: "Vaquita no encontrada" });

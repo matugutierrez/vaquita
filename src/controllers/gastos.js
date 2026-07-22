@@ -12,10 +12,6 @@ const CATEGORIAS = [
 	"otro",
 ];
 
-/**
- * Valida las partes del gasto: [{ user_id, monto }] en centavos.
- * Deben ser miembros del grupo y sumar exactamente el monto total.
- */
 async function validarPartes(grupoId, partes, montoTotal) {
 	if (!Array.isArray(partes) || partes.length === 0) return null;
 	const miembros = await db.all("SELECT user_id FROM miembros WHERE grupo_id = ?", [
@@ -37,7 +33,6 @@ async function validarPartes(grupoId, partes, montoTotal) {
 	return limpio;
 }
 
-/* POST /api/grupos/:id/gastos (auth, miembro) */
 export async function crear(req, res, user, body, grupoId) {
 	if (!(await esMiembro(grupoId, user.id)))
 		return send(res, 403, { error: "No sos miembro de esta vaquita" });
@@ -69,7 +64,6 @@ export async function crear(req, res, user, body, grupoId) {
 	return send(res, 201, gasto);
 }
 
-/* DELETE /api/grupos/:id/gastos/:gastoId (auth, miembro) */
 export async function borrar(req, res, user, _body, grupoId, gastoId) {
 	if (!(await esMiembro(grupoId, user.id)))
 		return send(res, 403, { error: "No sos miembro de esta vaquita" });
@@ -81,7 +75,6 @@ export async function borrar(req, res, user, _body, grupoId, gastoId) {
 	return send(res, 200, { ok: true });
 }
 
-/* POST /api/grupos/:id/pagos (auth, miembro) { a_id, monto, fecha? } */
 export async function registrarPago(req, res, user, body, grupoId) {
 	if (!(await esMiembro(grupoId, user.id)))
 		return send(res, 403, { error: "No sos miembro de esta vaquita" });
@@ -104,7 +97,6 @@ export async function registrarPago(req, res, user, body, grupoId) {
 	return send(res, 201, pago);
 }
 
-/* DELETE /api/grupos/:id/pagos/:pagoId */
 export async function borrarPago(req, res, user, _body, grupoId, pagoId) {
 	if (!(await esMiembro(grupoId, user.id)))
 		return send(res, 403, { error: "No sos miembro de esta vaquita" });

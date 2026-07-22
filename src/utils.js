@@ -1,11 +1,14 @@
 import crypto from "node:crypto";
 
-/** Respuesta JSON estándar con headers de seguridad básicos. */
+/** Respuesta JSON estándar con headers de seguridad y CORS. */
 export function send(res, status, data) {
 	res.writeHead(status, {
 		"Content-Type": "application/json; charset=utf-8",
 		"Cache-Control": "no-store",
 		"X-Content-Type-Options": "nosniff",
+		"Access-Control-Allow-Origin": "*",
+		"Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
+		"Access-Control-Allow-Headers": "Content-Type, Authorization",
 	});
 	res.end(JSON.stringify(data));
 }

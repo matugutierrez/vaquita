@@ -1,9 +1,3 @@
-/*
- * Núcleo de autenticación. Todo con node:crypto, sin dependencias.
- *  - Contraseñas: scrypt (N=16384) + sal aleatoria por usuario.
- *  - Tokens: HMAC-SHA256 firmados, con expiración y época de revocación.
- *  - 2FA: TOTP RFC 6238 (compatible Google Authenticator / Authy).
- */
 import crypto from "node:crypto";
 import db from "./db.js";
 
@@ -14,10 +8,8 @@ if (!process.env.SECRET) {
 	);
 }
 
-const TOKEN_TTL_S = 7 * 24 * 3600; // 7 días
-const TEMP_TTL_S = 5 * 60; // token intermedio de 2FA: 5 minutos
-
-/* ---------- Contraseñas (scrypt) ---------- */
+const TOKEN_TTL_S = 7 * 24 * 3600;
+const TEMP_TTL_S = 5 * 60;
 
 export function hashPassword(password) {
 	const salt = crypto.randomBytes(16).toString("hex");
@@ -35,8 +27,6 @@ export function verifyPassword(password, stored) {
 		.toString("hex");
 	return crypto.timingSafeEqual(Buffer.from(hash), Buffer.from(calc));
 }
-
-/* ---------- Tokens firmados ---------- */
 
 function sign(payload) {
 	const body = Buffer.from(JSON.stringify(payload)).toString("base64url");
@@ -73,7 +63,6 @@ export function makeToken(user) {
 	});
 }
 
-/** Token intermedio: password OK pero falta el código 2FA. No sirve para la API. */
 export function makeTempToken(user) {
 	return sign({
 		uid: user.id,
@@ -87,7 +76,6 @@ export function verifyTempToken(token) {
 	return p && p.typ === "2fa-pending" ? p : null;
 }
 
-/** Devuelve el usuario autenticado de la request, o undefined. */
 export async function getUser(req) {
 	const auth = req.headers.authorization || "";
 	if (!auth.startsWith("Bearer ")) return undefined;
@@ -98,12 +86,9 @@ export async function getUser(req) {
 		[payload.uid],
 	);
 	if (!user) return undefined;
-	// Época de revocación: "cerrar sesión en todos los dispositivos" incrementa token_epoch.
 	if ((user.token_epoch || 0) !== (payload.epoch || 0)) return undefined;
 	return user;
 }
-
-/* ---------- TOTP (RFC 6238) ---------- */
 
 const B32 = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567";
 
@@ -158,7 +143,6 @@ function hotp(secretB32, counter) {
 	return String(code % 1e6).padStart(6, "0");
 }
 
-/** Verifica un código TOTP con ventana de ±1 período (30 s). */
 export function verifyTotp(secretB32, code) {
 	const clean = String(code || "").replace(/\D/g, "");
 	if (clean.length !== 6) return false;

@@ -20,7 +20,6 @@ export function serveStatic(req, res, pathname) {
 	let rel = decodeURIComponent(pathname);
 	if (rel === "/") rel = "/index.html";
 
-	// Anti path-traversal: resolver y verificar que quede dentro de /public.
 	const filePath = path.resolve(path.join(PUBLIC_DIR, rel));
 	if (!filePath.startsWith(PUBLIC_DIR + path.sep) && filePath !== PUBLIC_DIR) {
 		res.writeHead(403);
@@ -29,7 +28,6 @@ export function serveStatic(req, res, pathname) {
 
 	let finalPath = filePath;
 	if (!fs.existsSync(finalPath) || fs.statSync(finalPath).isDirectory()) {
-		// SPA fallback: cualquier ruta desconocida sirve index.html.
 		finalPath = path.join(PUBLIC_DIR, "index.html");
 	}
 

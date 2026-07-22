@@ -84,10 +84,10 @@ Views.login = {
 				inp.addEventListener("keydown", (e) => { if (e.key === "Enter") enviar(); });
 			}
 
-			wrap.append(
-				logo, errBox,
-				esRegistro ? h("div", { class: "field" }, nombre) : null,
-				h("div", { class: "field" }, email),
+		wrap.append(
+			logo, errBox,
+			...(esRegistro ? [h("div", { class: "field" }, nombre)] : []),
+			h("div", { class: "field" }, email),
 				h("div", { class: "field" }, pass),
 				h("button", { class: "btn primary block", onClick: enviar },
 					esRegistro ? "Crear cuenta" : "Entrar"),

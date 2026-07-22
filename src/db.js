@@ -8,12 +8,6 @@
 const DATABASE_URL = process.env.DATABASE_URL || "";
 
 const schema = (now) => `
-DROP TABLE IF EXISTS pagos CASCADE;
-DROP TABLE IF EXISTS gastos CASCADE;
-DROP TABLE IF EXISTS miembros CASCADE;
-DROP TABLE IF EXISTS grupos CASCADE;
-DROP TABLE IF EXISTS users CASCADE;
-
 CREATE TABLE IF NOT EXISTS users (
 	id TEXT PRIMARY KEY,
 	email TEXT UNIQUE NOT NULL,
@@ -46,7 +40,7 @@ CREATE TABLE IF NOT EXISTS gastos (
 	grupo_id TEXT NOT NULL REFERENCES grupos(id) ON DELETE CASCADE,
 	pagador_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
 	titulo TEXT NOT NULL,
-	monto INTEGER NOT NULL,
+	monto BIGINT NOT NULL,
 	fecha TEXT NOT NULL,
 	categoria TEXT DEFAULT 'otro',
 	partes TEXT DEFAULT '[]',
@@ -57,7 +51,7 @@ CREATE TABLE IF NOT EXISTS pagos (
 	grupo_id TEXT NOT NULL REFERENCES grupos(id) ON DELETE CASCADE,
 	de_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
 	a_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-	monto INTEGER NOT NULL,
+	monto BIGINT NOT NULL,
 	fecha TEXT NOT NULL,
 	created_at TEXT DEFAULT ${now}
 );
@@ -80,6 +74,8 @@ if (DATABASE_URL) {
 	};
 
 	await pool.query(schema("to_char(now(), 'YYYY-MM-DD HH24:MI:SS')"));
+	await pool.query("ALTER TABLE gastos ALTER COLUMN monto TYPE BIGINT");
+	await pool.query("ALTER TABLE pagos ALTER COLUMN monto TYPE BIGINT");
 
 	db = {
 		engine: "postgres",

@@ -13,7 +13,7 @@ import { send, uuid, vStr, EMAIL_RE } from "../utils.js";
 
 const MAX_FAILED = 5;
 const LOCK_MINUTES = 15;
-const GENERIC = "Email o contrase\u00f1a incorrectos"; // nunca revelar cu\u00e1l fall\u00f3
+const GENERIC = "Email o contrase\u00f1a incorrectos";
 
 function nowIso() {
 	return new Date().toISOString().slice(0, 19).replace("T", " ");
@@ -28,7 +28,6 @@ function publicUser(u) {
 	};
 }
 
-/* POST /api/auth/register */
 export async function register(req, res, body) {
 	const email = vStr(body.email, { min: 5, max: 120 })?.toLowerCase();
 	const nombre = vStr(body.nombre, { min: 2, max: 60 });
@@ -62,7 +61,6 @@ export async function register(req, res, body) {
 	return send(res, 201, { token: makeToken(fresh), user: publicUser(fresh) });
 }
 
-/* POST /api/auth/login */
 export async function login(req, res, body) {
 	const email = vStr(body.email, { min: 5, max: 120 })?.toLowerCase();
 	const password = typeof body.password === "string" ? body.password : "";
@@ -71,7 +69,6 @@ export async function login(req, res, body) {
 	const user = await db.get("SELECT * FROM users WHERE email = ?", [email]);
 	if (!user) return send(res, 401, { error: GENERIC });
 
-	// ¿Cuenta bloqueada por intentos fallidos?
 	if (user.locked_until && user.locked_until > nowIso()) {
 		return send(res, 423, {
 			error: `Cuenta bloqueada por seguridad. Prob\u00e1 de nuevo en unos minutos.`,
@@ -99,14 +96,12 @@ export async function login(req, res, body) {
 		[user.id],
 	);
 
-	// Si tiene 2FA, exigir el c\u00f3digo con un token intermedio de vida corta.
 	if (Number(user.totp_enabled) === 1) {
 		return send(res, 200, { requiere2fa: true, tempToken: makeTempToken(user) });
 	}
 	return send(res, 200, { token: makeToken(user), user: publicUser(user) });
 }
 
-/* POST /api/auth/2fa  { tempToken, code } */
 export async function login2fa(req, res, body) {
 	const payload = verifyTempToken(body.tempToken);
 	if (!payload) return send(res, 401, { error: "Sesi\u00f3n expirada, ingres\u00e1 de nuevo" });
@@ -118,12 +113,10 @@ export async function login2fa(req, res, body) {
 	return send(res, 200, { token: makeToken(user), user: publicUser(user) });
 }
 
-/* GET /api/auth/me (auth) */
 export async function me(req, res, user) {
 	return send(res, 200, { user: publicUser(user) });
 }
 
-/* POST /api/auth/2fa/setup (auth) -> genera secreto pendiente */
 export async function setup2fa(req, res, user) {
 	const secret = newTotpSecret();
 	await db.run("UPDATE users SET totp_secret = ?, totp_enabled = 0 WHERE id = ?", [
@@ -136,7 +129,6 @@ export async function setup2fa(req, res, user) {
 	});
 }
 
-/* POST /api/auth/2fa/confirm (auth) { code } -> activa 2FA si el c\u00f3digo es v\u00e1lido */
 export async function confirm2fa(req, res, user, body) {
 	const row = await db.get("SELECT totp_secret FROM users WHERE id = ?", [user.id]);
 	if (!row?.totp_secret)
@@ -147,7 +139,6 @@ export async function confirm2fa(req, res, user, body) {
 	return send(res, 200, { ok: true });
 }
 
-/* POST /api/auth/2fa/disable (auth) { code } */
 export async function disable2fa(req, res, user, body) {
 	const row = await db.get(
 		"SELECT totp_secret, totp_enabled FROM users WHERE id = ?",
@@ -164,7 +155,6 @@ export async function disable2fa(req, res, user, body) {
 	return send(res, 200, { ok: true });
 }
 
-/* POST /api/auth/logout-all (auth) -> invalida tokens en todos los dispositivos */
 export async function logoutAll(req, res, user) {
 	await db.run("UPDATE users SET token_epoch = token_epoch + 1 WHERE id = ?", [
 		user.id,
@@ -172,7 +162,6 @@ export async function logoutAll(req, res, user) {
 	return send(res, 200, { ok: true });
 }
 
-/* PUT /api/auth/perfil (auth) { nombre } */
 export async function updatePerfil(req, res, user, body) {
 	const nombre = vStr(body.nombre, { min: 2, max: 60 });
 	if (!nombre) return send(res, 400, { error: "Nombre inv\u00e1lido" });

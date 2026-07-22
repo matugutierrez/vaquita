@@ -1,9 +1,5 @@
 "use strict";
 
-/*
- * Router por hash + shell mobile con tab bar inferior.
- * Rutas: #/login, #/grupos, #/grupo/:id, #/ajustes
- */
 const App = (() => {
 	const root = document.getElementById("app");
 
@@ -58,7 +54,6 @@ const App = (() => {
 			);
 		}
 
-		// Tab bar solo en vistas raíz.
 		if (name === "grupos" || name === "ajustes") {
 			shell.append(tabbar(name));
 		}
@@ -75,7 +70,6 @@ const App = (() => {
 		);
 	}
 
-	/** Header estándar. back: hash destino o null. */
 	function topbar(title, sub, back) {
 		return h("header", { class: "topbar" },
 			back

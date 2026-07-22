@@ -6,10 +6,6 @@ import * as grupos from "./controllers/grupos.js";
 import * as gastos from "./controllers/gastos.js";
 import * as saldos from "./controllers/saldos.js";
 
-/*
- * Rutas: [método, regex, handler, needsAuth]
- * Los handlers reciben (req, res, userOBody, body?, ...capturas).
- */
 const routes = [
 	["GET", /^\/api\/health$/, async (req, res) => send(res, 200, { ok: true }), false],
 
@@ -37,7 +33,6 @@ const routes = [
 ];
 
 export async function handleApi(req, res, pathname) {
-	// Rate limiting: más estricto en auth (fuerza bruta), generoso en el resto.
 	const scope = pathname.startsWith("/api/auth/") ? "auth" : "api";
 	if (rateLimited(req, scope)) {
 		return send(res, 429, {

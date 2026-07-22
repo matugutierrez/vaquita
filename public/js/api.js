@@ -1,6 +1,5 @@
 "use strict";
 
-/* Cliente HTTP mínimo con token en memoria + localStorage. */
 const API = (() => {
 	let token = localStorage.getItem("vaquita_token") || "";
 	let user = null;
@@ -20,7 +19,6 @@ const API = (() => {
 		});
 		const data = await res.json().catch(() => ({}));
 		if (res.status === 401 && token) {
-			// Sesión vencida: limpiar y volver al login.
 			API.logout();
 			location.hash = "#/login";
 			location.reload();
