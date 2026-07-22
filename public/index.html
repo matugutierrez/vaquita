@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="es-AR">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+	<meta name="theme-color" content="#faf8f3">
+	<meta name="description" content="VAQUITA — gastos compartidos sin drama. Para el asado, el viaje, el depto.">
+	<title>VAQUITA</title>
+	<link rel="manifest" href="/manifest.webmanifest">
+	<link rel="icon" href="/icons/icon.svg" type="image/svg+xml">
+	<link rel="apple-touch-icon" href="/icons/icon-192.png">
+	<link rel="stylesheet" href="/css/main.css">
+</head>
+<body>
+	<div id="app"></div>
+	<script src="/js/api.js"></script>
+	<script src="/js/components.js"></script>
+	<script src="/js/views/login.js"></script>
+	<script src="/js/views/grupos.js"></script>
+	<script src="/js/views/grupo.js"></script>
+	<script src="/js/views/ajustes.js"></script>
+	<script src="/js/app.js"></script>
+	<script>
+		if ("serviceWorker" in navigator && location.protocol === "https:") {
+			navigator.serviceWorker.register("/sw.js");
+		}
+	</script>
+</body>
+</html>

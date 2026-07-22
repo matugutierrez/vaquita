@@ -1,0 +1,21 @@
+{
+	"name": "vaquita",
+	"version": "1.0.0",
+	"description": "Gastos compartidos sin drama. Para el asado, el viaje, el depto. Hecha en Argentina.",
+	"type": "module",
+	"main": "server.js",
+	"scripts": {
+		"start": "node server.js",
+		"dev": "node --watch server.js",
+		"build:demo": "node scripts/build-demo.js"
+	},
+	"engines": {
+		"node": ">=22.5"
+	},
+	"dependencies": {
+		"pg": "^8.13.1"
+	},
+	"keywords": ["gastos", "compartidos", "argentina", "vaquita", "split", "pwa"],
+	"author": "Matu Gutierrez",
+	"license": "MIT"
+}
