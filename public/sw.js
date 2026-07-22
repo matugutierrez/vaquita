@@ -16,6 +16,8 @@ const SHELL = [
 	"/js/app.js",
 	"/manifest.webmanifest",
 	"/icons/icon.svg",
+	"/intro/intro%20cel.mp4",
+	"/intro/intro%20pc.mp4",
 ];
 
 self.addEventListener("install", (e) => {

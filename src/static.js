@@ -14,6 +14,7 @@ const MIME = {
 	".png": "image/png",
 	".ico": "image/x-icon",
 	".woff2": "font/woff2",
+	".mp4": "video/mp4",
 };
 
 export function serveStatic(req, res, pathname) {

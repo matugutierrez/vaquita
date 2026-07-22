@@ -83,7 +83,19 @@ const App = (() => {
 	}
 
 	window.addEventListener("hashchange", render);
-	window.addEventListener("DOMContentLoaded", render);
+	window.addEventListener("DOMContentLoaded", () => {
+		const intro = document.getElementById("intro");
+		const video = document.getElementById("intro-video");
+		if (intro && video) {
+			const end = () => {
+				intro.classList.add("hide");
+				setTimeout(() => intro.remove(), 350);
+			};
+			video.addEventListener("ended", end);
+			setTimeout(end, 3000);
+		}
+		render();
+	});
 
 	return { render, topbar };
 })();
